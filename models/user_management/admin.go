@@ -29,6 +29,21 @@ func Login(Email string, Password string, Status int) (tools.Response, error) {
 			res.Data = us
 			return res, nil
 		}
+	} else if Status == 2 {
+
+		sqlStatement := "SELECT PostmanID FROM postman where Email=? && Password=? "
+
+		err := con.QueryRow(sqlStatement, Email, Password).Scan(&us.ID)
+
+		us.Status = Status
+
+		if err != nil {
+			res.Status = http.StatusNotFound
+			res.Message = "Status Not Found"
+			us.ID = ""
+			res.Data = us
+			return res, nil
+		}
 	}
 
 	res.Status = http.StatusOK
