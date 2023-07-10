@@ -18,8 +18,13 @@ func Init() *echo.Echo {
 
 	UM := e.Group("/UM")
 
-	//NDL
+	//User Management
+	//Login
+	UM.GET("/login", user_management.Login)
+	//Sign-Up-Postman
 	UM.POST("/sign-up-postman", user_management.CreatePostman)
+	//Sign-Up-Admin-Bd
+	UM.POST("/sign-up-admin-bd", user_management.CreateAdminAndBuilding)
 
 	return e
 }

@@ -25,7 +25,7 @@ func Create_Postman(Name string, Email string, Password string) (tools.Response,
 
 	PostmanID := "P-" + temp
 
-	sqlStatement = "INSERT INTO postman(PostmanID, Email, Password, Name) values(?,?,?,?)"
+	sqlStatement = "INSERT INTO postman(co,PostmanID, Email, Password, Name) values(?,?,?,?,?)"
 
 	stmt, err := con.Prepare(sqlStatement)
 
@@ -33,7 +33,7 @@ func Create_Postman(Name string, Email string, Password string) (tools.Response,
 		return res, err
 	}
 
-	_, err = stmt.Exec(PostmanID, Email, Password, Name)
+	_, err = stmt.Exec(nm, PostmanID, Email, Password, Name)
 
 	stmt.Close()
 
