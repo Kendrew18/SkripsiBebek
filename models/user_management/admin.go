@@ -8,6 +8,7 @@ import (
 	"strconv"
 )
 
+//Login
 func Login(Email string, Password string, Status int) (tools.Response, error) {
 
 	var res tools.Response
@@ -22,6 +23,7 @@ func Login(Email string, Password string, Status int) (tools.Response, error) {
 		err := con.QueryRow(sqlStatement, Email, Password).Scan(&us.ID)
 
 		us.Status = Status
+		us.BuildingID = ""
 
 		if err != nil {
 			res.Status = http.StatusNotFound
@@ -32,9 +34,25 @@ func Login(Email string, Password string, Status int) (tools.Response, error) {
 		}
 	} else if Status == 2 {
 
-		sqlStatement := "SELECT AdminID FROM admin where Email=? && Password=? "
+		sqlStatement := "SELECT AdminID,BuildingID FROM admin where Email=? && Password=? "
 
-		err := con.QueryRow(sqlStatement, Email, Password).Scan(&us.ID)
+		err := con.QueryRow(sqlStatement, Email, Password).Scan(&us.ID, &us.BuildingID)
+
+		us.Status = Status
+
+		if err != nil {
+			res.Status = http.StatusNotFound
+			res.Message = "Status Not Found"
+			us.ID = ""
+			res.Data = us
+			return res, nil
+		}
+
+	} else if Status == 1 {
+
+		sqlStatement := "SELECT ResidentID,BuildingID FROM resident where email=? && password=? "
+
+		err := con.QueryRow(sqlStatement, Email, Password).Scan(&us.ID, &us.BuildingID)
 
 		us.Status = Status
 
@@ -54,6 +72,7 @@ func Login(Email string, Password string, Status int) (tools.Response, error) {
 	return res, nil
 }
 
+//Create Admin
 func Create_Admin_And_Building(Email string, Password string, Name string,
 	BuildingName string, Address string, Biography string) (tools.Response, error) {
 	var res tools.Response
