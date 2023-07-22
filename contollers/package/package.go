@@ -40,6 +40,21 @@ func ReadPackage(c echo.Context) error {
 	return c.JSON(http.StatusOK, result)
 }
 
+//Read_Package_History
+func ReadPackageHistory(c echo.Context) error {
+	ResidentID := c.FormValue("resident_id")
+	AdminID := c.FormValue("admin_id")
+	PostmanID := c.FormValue("postman_id")
+
+	result, err := _package.Read_Package_History(ResidentID, AdminID, PostmanID)
+
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
+	}
+
+	return c.JSON(http.StatusOK, result)
+}
+
 //Read_Detail_Package_Resident
 func ReadDetailPackageResident(c echo.Context) error {
 	PackageID := c.FormValue("package_id")
@@ -53,11 +68,11 @@ func ReadDetailPackageResident(c echo.Context) error {
 	return c.JSON(http.StatusOK, result)
 }
 
-//Read_Detail_Package_Postman
-func ReadDetailPackagePostman(c echo.Context) error {
+//Read_Detail_Package
+func ReadDetailPackage(c echo.Context) error {
 	PackageID := c.FormValue("package_id")
 
-	result, err := _package.Read_Detail_Package_Postman(PackageID)
+	result, err := _package.Read_Detail_Package(PackageID)
 
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
@@ -90,6 +105,19 @@ func UpdateStatusPackageAdmin(c echo.Context) error {
 
 	result, err := _package.Update_Status_Package_Admin(AdminID, No_resi,
 		Name, Street_Name, Building_Name, Room_Number)
+
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
+	}
+
+	return c.JSON(http.StatusOK, result)
+}
+
+//Update_Status_Package_Resident
+func UpdateStatusPackageResident(c echo.Context) error {
+	PackageID := c.FormValue("package_id")
+
+	result, err := _package.Update_Status_Package_Resident(PackageID)
 
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})

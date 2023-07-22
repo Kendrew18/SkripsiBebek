@@ -45,16 +45,19 @@ func Init() *echo.Echo {
 	PCK.POST("/input-package", _package.InputPackage)
 	//Read-Package
 	PCK.GET("/read-package", _package.ReadPackage)
+	//Read-Package-History
+	PCK.GET("/read-package-his", _package.ReadPackageHistory)
 	//Read-Detail-Package-Resident
 	PCK.GET("/read-det-pack-res", _package.ReadDetailPackageResident)
 	//Read-Detail-Package-Postman
-	PCK.GET("/read-det-pack-post", _package.ReadDetailPackagePostman)
+	PCK.GET("/read-det-pack", _package.ReadDetailPackage)
 
 	//Update-Status-Package (Return Postman)
-	PCK.PUT("/update-return", _package.UpdateStatusPackage)
+	PCK.POST("/update-return", _package.UpdateStatusPackage)
 	//Update-Status-Package (Admin)
-	PCK.PUT("/update-stat-admin", _package.UpdateStatusPackageAdmin)
+	PCK.POST("/update-stat-admin", _package.UpdateStatusPackageAdmin)
 	//Update-Status-Package (Resident)
+	PCK.POST("/update-stat-res", _package.UpdateStatusPackageResident)
 
 	return e
 }

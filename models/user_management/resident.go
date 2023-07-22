@@ -87,7 +87,7 @@ func Read_CSV(writer http.ResponseWriter, request *http.Request, BuidingID strin
 
 	nm := int64(0)
 
-	sqlStatement := "SELECT count(ResidentID) FROM resident ORDER BY co ASC "
+	sqlStatement := "SELECT co FROM resident ORDER BY co DESC LIMIT 1"
 
 	err = con.QueryRow(sqlStatement).Scan(&nm)
 
