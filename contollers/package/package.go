@@ -65,3 +65,35 @@ func ReadDetailPackagePostman(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, result)
 }
+
+//Update_Status_Package (Return Postman)
+func UpdateStatusPackage(c echo.Context) error {
+	PackageID := c.FormValue("package_id")
+
+	result, err := _package.Update_Status_Package(PackageID)
+
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
+	}
+
+	return c.JSON(http.StatusOK, result)
+}
+
+//Update-Status-Package (Admin)
+func UpdateStatusPackageAdmin(c echo.Context) error {
+	AdminID := c.FormValue("adminid")
+	No_resi := c.FormValue("no_resi")
+	Name := c.FormValue("name")
+	Street_Name := c.FormValue("street_name")
+	Building_Name := c.FormValue("building_name")
+	Room_Number := c.FormValue("room_number")
+
+	result, err := _package.Update_Status_Package_Admin(AdminID, No_resi,
+		Name, Street_Name, Building_Name, Room_Number)
+
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
+	}
+
+	return c.JSON(http.StatusOK, result)
+}

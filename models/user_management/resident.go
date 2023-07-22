@@ -168,3 +168,36 @@ func See_All_Resident(BuildingID string) (tools.Response, error) {
 }
 
 //Delete_Resident
+func Delete_Resident(ResidentID string) (tools.Response, error) {
+	var res tools.Response
+
+	con := db.CreateCon()
+
+	sqlstatement := "DELETE FROM resident WHERE ResidentID=?"
+
+	stmt, err := con.Prepare(sqlstatement)
+
+	if err != nil {
+		return res, err
+	}
+
+	result, err := stmt.Exec(ResidentID)
+
+	if err != nil {
+		return res, err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+
+	if err != nil {
+		return res, err
+	}
+
+	res.Status = http.StatusOK
+	res.Message = "Suksess"
+	res.Data = map[string]int64{
+		"rows": rowsAffected,
+	}
+
+	return res, nil
+}

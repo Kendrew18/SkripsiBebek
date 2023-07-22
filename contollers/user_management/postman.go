@@ -6,6 +6,7 @@ import (
 	"net/http"
 )
 
+//Sign-up-postman
 func CreatePostman(c echo.Context) error {
 	Name := c.FormValue("name")
 	Email := c.FormValue("email")

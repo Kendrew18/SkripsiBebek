@@ -37,6 +37,8 @@ func Init() *echo.Echo {
 	UM.POST("/read-CSV", user_management.ReadCSV)
 	//See_All_Resident
 	UM.GET("/see-all-resident", user_management.SeeAllResident)
+	//Delete-Resident
+	UM.DELETE("/delete-resident", user_management.DeleteResident)
 
 	//Package
 	//Input-Package
@@ -47,6 +49,12 @@ func Init() *echo.Echo {
 	PCK.GET("/read-det-pack-res", _package.ReadDetailPackageResident)
 	//Read-Detail-Package-Postman
 	PCK.GET("/read-det-pack-post", _package.ReadDetailPackagePostman)
+
+	//Update-Status-Package (Return Postman)
+	PCK.PUT("/update-return", _package.UpdateStatusPackage)
+	//Update-Status-Package (Admin)
+	PCK.PUT("/update-stat-admin", _package.UpdateStatusPackageAdmin)
+	//Update-Status-Package (Resident)
 
 	return e
 }

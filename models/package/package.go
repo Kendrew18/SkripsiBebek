@@ -4,6 +4,7 @@ import (
 	"SkripsiBebek/db"
 	"SkripsiBebek/struct_all/st_package"
 	"SkripsiBebek/tools"
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -235,5 +236,153 @@ func Read_Detail_Package_Postman(PackageID string) (tools.Response, error) {
 	return res, nil
 }
 
-//Update-Status-package
+//Update-Status-Package (Return Postman)
+func Update_Status_Package(packageID string) (tools.Response, error) {
+	var res tools.Response
+
+	con := db.CreateCon()
+
+	nm := int64(0)
+
+	sqlStatement := "SELECT count(IDDetailStatus) FROM detail_status ORDER BY co ASC "
+
+	err := con.QueryRow(sqlStatement).Scan(&nm)
+
+	nm = nm + 1
+
+	temp := strconv.FormatInt(nm, 10)
+
+	DST := "DS-" + temp
+
+	var time1 = time.Now()
+	date_sql := time1.Format("2006-01-02")
+
+	sqlStatement = "INSERT INTO detail_status(co,iddetailstatus, idpacakage, idstatus, date) values(?,?,?,?,?)"
+
+	stmt, err := con.Prepare(sqlStatement)
+
+	if err != nil {
+		return res, err
+	}
+
+	_, err = stmt.Exec(nm, DST, packageID, "STAT-4", date_sql)
+
+	sqlStatement = "UPDATE package SET IDDetail=? WHERE PackageID=?"
+
+	stmt, err = con.Prepare(sqlStatement)
+
+	if err != nil {
+		return res, err
+	}
+
+	result, err := stmt.Exec(DST, packageID)
+
+	if err != nil {
+		return res, err
+	}
+
+	rowschanged, err := result.RowsAffected()
+
+	if err != nil {
+		return res, err
+	}
+
+	stmt.Close()
+
+	res.Status = http.StatusOK
+	res.Message = "Suksess"
+	res.Data = map[string]int64{
+		"rows": rowschanged,
+	}
+
+	return res, nil
+}
+
+//Update-Status-Package (Admin)
+func Update_Status_Package_Admin(AdminID string, NoResi string, Name string,
+	Street_Name string, Building_Name string, Room_Number string) (tools.Response, error) {
+	var res tools.Response
+	con := db.CreateCon()
+
+	temp := ""
+
+	sqlStatement := "SELECT ResidentID FROM resident join building b on b.BuildingID = resident.BuildingID WHERE room_no=? && BuildingName=? && Address=? && CONCAT(name,' ',surname) LIKE ?"
+
+	TN := "'%" + Name + "%'"
+
+	fmt.Println(TN)
+	_ = con.QueryRow(sqlStatement, Room_Number, Building_Name, Street_Name, TN).Scan(&temp)
+
+	if temp != "" {
+
+		//Create detail status baru
+		packageID := ""
+
+		sqlStatement := "SELECT PackageID FROM package WHERE NoResi=? && Room_Number=? && Building_Name=? && Street_Name=?"
+
+		_ = con.QueryRow(sqlStatement, NoResi, Room_Number, Building_Name, Street_Name).Scan(&packageID)
+
+		nm := int64(0)
+
+		sqlStatement = "SELECT count(IDDetailStatus) FROM detail_status ORDER BY co ASC "
+
+		err := con.QueryRow(sqlStatement).Scan(&nm)
+
+		nm = nm + 1
+
+		temp := strconv.FormatInt(nm, 10)
+
+		DST := "DS-" + temp
+
+		var time1 = time.Now()
+		date_sql := time1.Format("2006-01-02")
+
+		sqlStatement = "INSERT INTO detail_status(co,iddetailstatus, idpacakage, idstatus, date) values(?,?,?,?,?)"
+
+		stmt, err := con.Prepare(sqlStatement)
+
+		if err != nil {
+			return res, err
+		}
+
+		_, err = stmt.Exec(nm, DST, packageID, "STAT-2", date_sql)
+
+		//Update Status Package
+		sqlStatement = "UPDATE package SET IDDetail=?, AdminID=? WHERE PackageID=?"
+
+		stmt, err = con.Prepare(sqlStatement)
+
+		if err != nil {
+			return res, err
+		}
+
+		result, err := stmt.Exec(DST, AdminID, packageID)
+
+		if err != nil {
+			return res, err
+		}
+
+		rowschanged, err := result.RowsAffected()
+
+		if err != nil {
+			return res, err
+		}
+
+		stmt.Close()
+
+		res.Status = http.StatusOK
+		res.Message = "Suksess"
+		res.Data = map[string]int64{
+			"rows": rowschanged,
+		}
+	} else {
+		res.Status = http.StatusNotFound
+		res.Message = "Not Found"
+	}
+
+	return res, nil
+}
+
+//Update-Status-Package (Resident)
+
 //Delete-package

@@ -31,3 +31,16 @@ func SeeAllResident(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, result)
 }
+
+//Delete Resident
+func DeleteResident(c echo.Context) error {
+	ResidentID := c.FormValue("residentid")
+
+	result, err := user_management.Delete_Resident(ResidentID)
+
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
+	}
+
+	return c.JSON(http.StatusOK, result)
+}
