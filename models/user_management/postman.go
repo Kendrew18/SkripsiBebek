@@ -21,7 +21,7 @@ func Create_Postman(Name string, Email string, Password string) (tools.Response,
 
 	nm = nm + 1
 
-	temp := strconv.FormatInt(nm, 64)
+	temp := strconv.FormatInt(nm, 10)
 
 	PostmanID := "P-" + temp
 

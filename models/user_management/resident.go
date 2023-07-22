@@ -101,9 +101,9 @@ func Read_CSV(writer http.ResponseWriter, request *http.Request, BuidingID strin
 
 		if ID == "" {
 
-			nm = nm + 1
+			nm = nm + int64(1)
 
-			temp := strconv.FormatInt(nm, 64)
+			temp := strconv.FormatInt(nm, 10)
 
 			ResidentID := "R-" + temp
 

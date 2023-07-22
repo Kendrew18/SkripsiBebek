@@ -24,7 +24,7 @@ func Input_Package(PostmanID string, NoResi string, Name string,
 
 	nm = nm + 1
 
-	temp := strconv.FormatInt(nm, 64)
+	temp := strconv.FormatInt(nm, 10)
 
 	PackageID := "PA-" + temp
 
@@ -47,7 +47,7 @@ func Input_Package(PostmanID string, NoResi string, Name string,
 
 	nm = nm + 1
 
-	temp = strconv.FormatInt(nm, 64)
+	temp = strconv.FormatInt(nm, 10)
 
 	DST := "DS-" + temp
 

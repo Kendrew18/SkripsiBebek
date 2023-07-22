@@ -87,7 +87,7 @@ func Create_Admin_And_Building(Email string, Password string, Name string,
 
 	nm = nm + 1
 
-	temp := strconv.FormatInt(nm, 64)
+	temp := strconv.FormatInt(nm, 10)
 
 	BuildingID := "B-" + temp
 
@@ -110,7 +110,7 @@ func Create_Admin_And_Building(Email string, Password string, Name string,
 
 	nm = nm + 1
 
-	temp = strconv.FormatInt(nm, 64)
+	temp = strconv.FormatInt(nm, 10)
 
 	AdminID := "AD-" + temp
 
