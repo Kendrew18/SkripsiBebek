@@ -29,17 +29,6 @@ func Input_Package(PostmanID string, NoResi string, Name string,
 
 	PackageID := "PA-" + temp
 
-	sqlStatement = "INSERT INTO package(co,PackageID, NoResi, Name, Street_Name,Building_Name,Room_Number,PostmanID) values(?,?,?,?,?,?,?,?)"
-
-	stmt, err := con.Prepare(sqlStatement)
-
-	if err != nil {
-		return res, err
-	}
-
-	_, err = stmt.Exec(nm, PackageID, NoResi, Name, Street_Name,
-		Building_Name, Room_Number, PostmanID)
-
 	nm = int64(0)
 
 	sqlStatement = "SELECT count(IDDetailStatus) FROM detail_status ORDER BY co ASC "
@@ -57,13 +46,28 @@ func Input_Package(PostmanID string, NoResi string, Name string,
 
 	sqlStatement = "INSERT INTO detail_status(co,iddetailstatus, idpacakage, idstatus, date) values(?,?,?,?,?)"
 
-	stmt, err = con.Prepare(sqlStatement)
+	stmt, err := con.Prepare(sqlStatement)
 
 	if err != nil {
 		return res, err
 	}
 
 	_, err = stmt.Exec(nm, DST, PackageID, "STAT-1", date_sql)
+
+	sqlStatement = "INSERT INTO package(co,PackageID, NoResi, Name, Street_Name,Building_Name,Room_Number,PostmanID,IDDetail) values(?,?,?,?,?,?,?,?,?)"
+
+	stmt, err = con.Prepare(sqlStatement)
+
+	if err != nil {
+		return res, err
+	}
+
+	_, err = stmt.Exec(nm, PackageID, NoResi, Name, Street_Name,
+		Building_Name, Room_Number, PostmanID, DST)
+
+	if err != nil {
+		return res, err
+	}
 
 	stmt.Close()
 
