@@ -17,19 +17,30 @@ func Input_Package(PostmanID string, NoResi string, Name string,
 
 	con := db.CreateCon()
 
-	nm_p := int64(0)
+	nm := int64(0)
 
 	sqlStatement := "SELECT count(PackageID) FROM package ORDER BY co ASC "
 
-	err := con.QueryRow(sqlStatement).Scan(&nm_p)
+	err := con.QueryRow(sqlStatement).Scan(&nm)
 
-	nm_p = nm_p + 1
+	nm = nm + 1
 
-	temp := strconv.FormatInt(nm_p, 10)
+	temp := strconv.FormatInt(nm, 10)
 
 	PackageID := "PA-" + temp
 
-	nm := int64(0)
+	sqlStatement = "INSERT INTO package(co,PackageID, NoResi, Name, Street_Name,Building_Name,Room_Number,PostmanID) values(?,?,?,?,?,?,?,?)"
+
+	stmt, err := con.Prepare(sqlStatement)
+
+	if err != nil {
+		return res, err
+	}
+
+	_, err = stmt.Exec(nm, PackageID, NoResi, Name, Street_Name,
+		Building_Name, Room_Number, PostmanID)
+
+	nm = int64(0)
 
 	sqlStatement = "SELECT count(IDDetailStatus) FROM detail_status ORDER BY co ASC "
 
@@ -46,7 +57,7 @@ func Input_Package(PostmanID string, NoResi string, Name string,
 
 	sqlStatement = "INSERT INTO detail_status(co,iddetailstatus, idpacakage, idstatus, date) values(?,?,?,?,?)"
 
-	stmt, err := con.Prepare(sqlStatement)
+	stmt, err = con.Prepare(sqlStatement)
 
 	if err != nil {
 		return res, err
@@ -54,7 +65,7 @@ func Input_Package(PostmanID string, NoResi string, Name string,
 
 	_, err = stmt.Exec(nm, DST, PackageID, "STAT-1", date_sql)
 
-	sqlStatement = "INSERT INTO package(co,PackageID, NoResi, Name, Street_Name,Building_Name,Room_Number,PostmanID,IDDetail) values(?,?,?,?,?,?,?,?,?)"
+	sqlStatement = "UPDATE package SET IDDetail=? WHERE PackageID=?"
 
 	stmt, err = con.Prepare(sqlStatement)
 
@@ -62,8 +73,7 @@ func Input_Package(PostmanID string, NoResi string, Name string,
 		return res, err
 	}
 
-	_, err = stmt.Exec(nm_p, PackageID, NoResi, Name, Street_Name,
-		Building_Name, Room_Number, PostmanID, DST)
+	_, err = stmt.Exec(DST, PackageID)
 
 	if err != nil {
 		return res, err
