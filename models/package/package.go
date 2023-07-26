@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-//Input-Package
+//Input-Package (V)
 func Input_Package(PostmanID string, NoResi string, Name string,
 	Street_Name string, Building_Name string, Room_Number string) (tools.Response, error) {
 	var res tools.Response
@@ -87,7 +87,7 @@ func Input_Package(PostmanID string, NoResi string, Name string,
 	return res, nil
 }
 
-//Read-Package
+//Read-Package (V)
 func Read_Package(ResidentID string, AdminID string, PostmanID string) (tools.Response, error) {
 	var res tools.Response
 	var Package st_package.Read_Package
@@ -97,7 +97,7 @@ func Read_Package(ResidentID string, AdminID string, PostmanID string) (tools.Re
 
 	if ResidentID != "" {
 
-		sqlStatement := "SELECT PackageID,NoResi,Street_Name,StatusName FROM package join detail_status ds on package.IDDetail = ds.IDDetailStatus  join status ON ds.IDStatus=status.StatusID WHERE ResidentID=? && ds.IDStatus=? ORDER BY co ASC"
+		sqlStatement := "SELECT PackageID,NoResi,Street_Name,StatusName FROM package join detail_status ds on package.IDDetail = ds.IDDetailStatus  join status_pack ON ds.IDStatus=status_pack.StatusID WHERE ResidentID=? && ds.IDStatus=? ORDER BY package.co ASC"
 
 		rows, err := con.Query(sqlStatement, ResidentID, "STAT-2")
 
@@ -117,7 +117,7 @@ func Read_Package(ResidentID string, AdminID string, PostmanID string) (tools.Re
 		}
 	} else if AdminID != "" {
 
-		sqlStatement := "SELECT PackageID,NoResi,Street_Name,IDDetail FROM package join detail_status ds on package.IDDetail = ds.IDDetailStatus  join status ON ds.IDStatus=status.StatusID WHERE AdminID=? && ds.IDStatus=? ORDER BY co ASC"
+		sqlStatement := "SELECT PackageID,NoResi,Street_Name,StatusName FROM package join detail_status ds on package.IDDetail = ds.IDDetailStatus  join status_pack ON ds.IDStatus=status_pack.StatusID WHERE AdminID=? && ds.IDStatus=? ORDER BY package.co ASC"
 
 		rows, err := con.Query(sqlStatement, AdminID, "STAT-2")
 
@@ -137,7 +137,7 @@ func Read_Package(ResidentID string, AdminID string, PostmanID string) (tools.Re
 		}
 	} else if PostmanID != "" {
 
-		sqlStatement := "SELECT PackageID,NoResi,Street_Name,IDDetail FROM package join detail_status ds on package.IDDetail = ds.IDDetailStatus  join status ON ds.IDStatus=status.StatusID WHERE PostmanID=? && ds.IDStatus=? ORDER BY co ASC"
+		sqlStatement := "SELECT PackageID,NoResi,Street_Name,StatusName FROM package JOIN detail_status ds ON package.IDDetail = ds.IDDetailStatus JOIN status_pack ON status_pack.StatusID = ds.IDStatus WHERE PostmanID=? && StatusID=? ORDER BY package.co ASC"
 
 		rows, err := con.Query(sqlStatement, PostmanID, "STAT-1")
 
@@ -180,7 +180,7 @@ func Read_Package_History(ResidentID string, AdminID string, PostmanID string) (
 
 	if ResidentID != "" {
 
-		sqlStatement := "SELECT PackageID,NoResi,Street_Name,StatusName FROM package join detail_status ds on package.IDDetail = ds.IDDetailStatus  join status ON ds.IDStatus=status.StatusID WHERE ResidentID=? && ds.IDStatus=? ORDER BY co ASC"
+		sqlStatement := "SELECT PackageID,NoResi,Street_Name,StatusName FROM package join detail_status ds on package.IDDetail = ds.IDDetailStatus  join status_pack ON ds.IDStatus=status_pack.StatusID WHERE ResidentID=? && ds.IDStatus=? ORDER BY package.co ASC"
 
 		rows, err := con.Query(sqlStatement, ResidentID, "STAT-3")
 
@@ -200,7 +200,7 @@ func Read_Package_History(ResidentID string, AdminID string, PostmanID string) (
 		}
 	} else if AdminID != "" {
 
-		sqlStatement := "SELECT PackageID,NoResi,Street_Name,IDDetail FROM package join detail_status ds on package.IDDetail = ds.IDDetailStatus  join status ON ds.IDStatus=status.StatusID WHERE AdminID=? && ds.IDStatus!=? ORDER BY co ASC"
+		sqlStatement := "SELECT PackageID,NoResi,Street_Name,StatusName FROM package join detail_status ds on package.IDDetail = ds.IDDetailStatus  join status_pack ON ds.IDStatus=status_pack.StatusID WHERE AdminID=? && ds.IDStatus!=? ORDER BY package.co ASC"
 
 		rows, err := con.Query(sqlStatement, AdminID, "STAT-2")
 
@@ -220,7 +220,7 @@ func Read_Package_History(ResidentID string, AdminID string, PostmanID string) (
 		}
 	} else if PostmanID != "" {
 
-		sqlStatement := "SELECT PackageID,NoResi,Street_Name,IDDetail FROM package join detail_status ds on package.IDDetail = ds.IDDetailStatus  join status ON ds.IDStatus=status.StatusID WHERE PostmanID=? && ds.IDStatus!=? ORDER BY co ASC"
+		sqlStatement := "SELECT PackageID,NoResi,Street_Name,StatusName FROM package join detail_status ds on package.IDDetail = ds.IDDetailStatus  join status_pack ON ds.IDStatus=status_pack.StatusID WHERE PostmanID=? && ds.IDStatus!=? ORDER BY  package.co ASC"
 
 		rows, err := con.Query(sqlStatement, PostmanID, "STAT-1")
 
@@ -253,7 +253,7 @@ func Read_Package_History(ResidentID string, AdminID string, PostmanID string) (
 	return res, nil
 }
 
-//Read-Detail-Package (Resident)
+//Read-Detail-Package (Resident) (tidak jadi digunakan)
 func Read_Detail_Package_Resident(PackageID string) (tools.Response, error) {
 	var res tools.Response
 	var Package st_package.Detail_Resident
@@ -261,7 +261,7 @@ func Read_Detail_Package_Resident(PackageID string) (tools.Response, error) {
 
 	con := db.CreateCon()
 
-	sqlStatement := "SELECT date,StatusName FROM detail_status join status s ON s.StatusID=detail_status.IDStatus where IDPacakage=?"
+	sqlStatement := "SELECT date,StatusName FROM detail_status join status_pack s ON s.StatusID=detail_status.IDStatus where IDPacakage=?"
 
 	rows, err := con.Query(sqlStatement, PackageID)
 
@@ -292,7 +292,7 @@ func Read_Detail_Package_Resident(PackageID string) (tools.Response, error) {
 	return res, nil
 }
 
-//Read-Detail-Package
+//Read-Detail-Package (V)
 func Read_Detail_Package(PackageID string) (tools.Response, error) {
 	var res tools.Response
 	var Package st_package.Detail_Postman
@@ -302,14 +302,16 @@ func Read_Detail_Package(PackageID string) (tools.Response, error) {
 
 	con := db.CreateCon()
 
-	sqlStatement := "SELECT PackageID, NoResi, package.Name, Street_Name, Building_Name, Room_Number,p.Name,S.StatusName FROM package JOIN postman p on package.PostmanID = p.PostmanID JOIN detail_status ds on package.PackageID = ds.IDPacakage JOIN status s on s.StatusID = ds.IDStatus WHERE PackageID=? ORDER BY co ASC"
+	sqlStatement := "SELECT PackageID, NoResi, package.Name, Street_Name, Building_Name,Street_Name,StatusName,p.Name FROM package JOIN postman p on package.PostmanID = p.PostmanID JOIN detail_status ds ON package.IDDetail = ds.IDDetailStatus JOIN status_pack sp on ds.IDStatus = sp.StatusID WHERE package.PackageID=?"
 
 	_ = con.QueryRow(sqlStatement, PackageID).Scan(&Package.PackageID,
 		&Package.Noresi, &Package.Name, &Package.Street_Name,
-		&Package.Building_Name, &Package.Room_Number, &Package.Postman_Name,
+		&Package.Building_Name, &Package.Street_Name, &Package.Postman_Name,
 		&Package.Current_Status)
 
-	sqlStatement = "SELECT date,StatusName FROM detail_status join status s ON s.StatusID=detail_status.IDStatus where IDPacakage=?"
+	fmt.Println(Package)
+
+	sqlStatement = "SELECT date,StatusName FROM detail_status join status_pack s ON s.StatusID=detail_status.IDStatus where IDPacakage=?"
 
 	rows, err := con.Query(sqlStatement, PackageID)
 
@@ -327,7 +329,11 @@ func Read_Detail_Package(PackageID string) (tools.Response, error) {
 		ST_arr_Package = append(ST_arr_Package, St_Package)
 	}
 
+	fmt.Println(ST_arr_Package)
+
 	Package.Detail_Status = ST_arr_Package
+
+	arr_Package = append(arr_Package, Package)
 
 	if arr_Package == nil {
 		res.Status = http.StatusNotFound
@@ -404,7 +410,7 @@ func Update_Status_Package(packageID string) (tools.Response, error) {
 	return res, nil
 }
 
-//Update-Status-Package (Admin)
+//Update-Status-Package (Admin) (V)
 func Update_Status_Package_Admin(AdminID string, NoResi string, Name string,
 	Street_Name string, Building_Name string, Room_Number string) (tools.Response, error) {
 	var res tools.Response
@@ -414,10 +420,12 @@ func Update_Status_Package_Admin(AdminID string, NoResi string, Name string,
 
 	sqlStatement := "SELECT ResidentID FROM resident join building b on b.BuildingID = resident.BuildingID WHERE room_no=? && BuildingName=? && Address=? && CONCAT(name,' ',surname) LIKE ?"
 
-	TN := "'%" + Name + "%'"
+	TN := "%" + Name + "%"
 
 	fmt.Println(TN)
 	_ = con.QueryRow(sqlStatement, Room_Number, Building_Name, Street_Name, TN).Scan(&ResID)
+
+	fmt.Println(ResID)
 
 	if ResID != "" {
 
@@ -489,7 +497,7 @@ func Update_Status_Package_Admin(AdminID string, NoResi string, Name string,
 	return res, nil
 }
 
-//Update-Status-Package (Resident)
+//Update-Status-Package (Resident) (V)
 func Update_Status_Package_Resident(packageID string) (tools.Response, error) {
 	var res tools.Response
 
