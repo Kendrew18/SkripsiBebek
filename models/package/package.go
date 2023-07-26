@@ -17,19 +17,19 @@ func Input_Package(PostmanID string, NoResi string, Name string,
 
 	con := db.CreateCon()
 
-	nm := int64(0)
+	nm_p := int64(0)
 
 	sqlStatement := "SELECT count(PackageID) FROM package ORDER BY co ASC "
 
-	err := con.QueryRow(sqlStatement).Scan(&nm)
+	err := con.QueryRow(sqlStatement).Scan(&nm_p)
 
-	nm = nm + 1
+	nm_p = nm_p + 1
 
-	temp := strconv.FormatInt(nm, 10)
+	temp := strconv.FormatInt(nm_p, 10)
 
 	PackageID := "PA-" + temp
 
-	nm = int64(0)
+	nm := int64(0)
 
 	sqlStatement = "SELECT count(IDDetailStatus) FROM detail_status ORDER BY co ASC "
 
@@ -62,7 +62,7 @@ func Input_Package(PostmanID string, NoResi string, Name string,
 		return res, err
 	}
 
-	_, err = stmt.Exec(nm, PackageID, NoResi, Name, Street_Name,
+	_, err = stmt.Exec(nm_p, PackageID, NoResi, Name, Street_Name,
 		Building_Name, Room_Number, PostmanID, DST)
 
 	if err != nil {
