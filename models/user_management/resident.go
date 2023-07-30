@@ -91,6 +91,8 @@ func Read_CSV(writer http.ResponseWriter, request *http.Request, BuidingID strin
 
 	err = con.QueryRow(sqlStatement).Scan(&nm)
 
+	co := 0
+
 	for i := 1; i < len(records); i++ {
 
 		ID := ""
@@ -100,6 +102,8 @@ func Read_CSV(writer http.ResponseWriter, request *http.Request, BuidingID strin
 		_ = con.QueryRow(sqlStatement, BuidingID, records[i][3]).Scan(&ID)
 
 		if ID == "" {
+
+			co++
 
 			nm = nm + int64(1)
 
@@ -121,8 +125,13 @@ func Read_CSV(writer http.ResponseWriter, request *http.Request, BuidingID strin
 		}
 	}
 
-	res.Status = http.StatusOK
-	res.Message = "Sukses"
+	if co == 0 {
+		res.Status = http.StatusNotFound
+		res.Message = "Data Already Include"
+	} else {
+		res.Status = http.StatusOK
+		res.Message = "Sukses"
+	}
 
 	return res, nil
 }
