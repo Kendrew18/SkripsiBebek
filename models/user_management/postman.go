@@ -2,6 +2,7 @@ package user_management
 
 import (
 	"SkripsiBebek/db"
+	"SkripsiBebek/struct_all/user_management"
 	"SkripsiBebek/tools"
 	"net/http"
 	"strconv"
@@ -10,6 +11,7 @@ import (
 func Create_Postman(Name string, Email string, Password string) (tools.Response, error) {
 
 	var res tools.Response
+	var data user_management.Login
 
 	con := db.CreateCon()
 
@@ -37,8 +39,13 @@ func Create_Postman(Name string, Email string, Password string) (tools.Response,
 
 	stmt.Close()
 
+	data.ID = PostmanID
+	data.Status = 1
+	data.BuildingID = ""
+
 	res.Status = http.StatusOK
 	res.Message = "Sukses"
+	res.Data = data
 
 	return res, nil
 }

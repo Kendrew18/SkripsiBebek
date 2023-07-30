@@ -58,6 +58,8 @@ func Init() *echo.Echo {
 	PCK.POST("/update-stat-admin", _package.UpdateStatusPackageAdmin)
 	//Update-Status-Package (Resident)
 	PCK.POST("/update-stat-res", _package.UpdateStatusPackageResident)
+	//Update-Data-Package
+	PCK.PUT("/update-data-package", _package.UpdateDataPackage)
 
 	return e
 }

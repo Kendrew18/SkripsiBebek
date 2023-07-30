@@ -558,3 +558,57 @@ func Update_Status_Package_Resident(packageID string) (tools.Response, error) {
 
 	return res, nil
 }
+
+//Update-Data-Package
+func Update_Data_Package(packageID string, NoResi string, Name string,
+	Street_Name string, Building_Name string, Room_Number string) (tools.Response, error) {
+	var res tools.Response
+
+	con := db.CreateCon()
+
+	nm := ""
+
+	sqlStatement := "SELECT StatusID FROM package JOIN detail_status ds on package.IDDetail = ds.IDDetailStatus JOIN status_pack sp on ds.IDStatus = sp.StatusID WHERE package.PackageID=? "
+
+	err := con.QueryRow(sqlStatement).Scan(&nm)
+
+	if err != nil {
+		return res, err
+	}
+
+	if nm == "STAT-1" {
+
+		sqlStatement = "UPDATE package SET NoResi=?,Name=?,Street_Name=?,Building_Name=?,Room_Number=? WHERE PackageID=?"
+
+		stmt, err := con.Prepare(sqlStatement)
+
+		if err != nil {
+			return res, err
+		}
+
+		result, err := stmt.Exec(NoResi, Name, Street_Name, Building_Name, Room_Number, packageID)
+
+		if err != nil {
+			return res, err
+		}
+
+		rowschanged, err := result.RowsAffected()
+
+		if err != nil {
+			return res, err
+		}
+
+		stmt.Close()
+
+		res.Status = http.StatusOK
+		res.Message = "Suksess"
+		res.Data = map[string]int64{
+			"rows": rowschanged,
+		}
+	} else {
+		res.Status = http.StatusNotFound
+		res.Message = "Can't be Updated"
+	}
+
+	return res, nil
+}

@@ -76,6 +76,7 @@ func Login(Email string, Password string, Status int) (tools.Response, error) {
 func Create_Admin_And_Building(Email string, Password string, Name string,
 	BuildingName string, Address string, Biography string) (tools.Response, error) {
 	var res tools.Response
+	var data user_management.Login
 
 	con := db.CreateCon()
 
@@ -126,8 +127,13 @@ func Create_Admin_And_Building(Email string, Password string, Name string,
 
 	stmt.Close()
 
+	data.ID = AdminID
+	data.Status = 2
+	data.BuildingID = BuildingID
+
 	res.Status = http.StatusOK
 	res.Message = "Sukses"
+	res.Data = data
 
 	return res, nil
 }

@@ -125,3 +125,22 @@ func UpdateStatusPackageResident(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, result)
 }
+
+//Update_Data_Package
+func UpdateDataPackage(c echo.Context) error {
+	PackageID := c.FormValue("package_id")
+	No_resi := c.FormValue("no_resi")
+	Name := c.FormValue("name")
+	Street_Name := c.FormValue("street_name")
+	Building_Name := c.FormValue("building_name")
+	Room_Number := c.FormValue("room_number")
+
+	result, err := _package.Update_Data_Package(PackageID, No_resi, Name,
+		Street_Name, Building_Name, Room_Number)
+
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
+	}
+
+	return c.JSON(http.StatusOK, result)
+}
