@@ -17,7 +17,7 @@ func Create_Postman(Name string, Email string, Password string) (tools.Response,
 
 	nm := int64(0)
 
-	sqlStatement := "SELECT count(PostmanID) FROM postman ORDER BY co ASC "
+	sqlStatement := "SELECT co FROM postman ORDER BY co DESC LIMIT 1"
 
 	err := con.QueryRow(sqlStatement).Scan(&nm)
 

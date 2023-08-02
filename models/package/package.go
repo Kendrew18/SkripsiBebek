@@ -19,7 +19,7 @@ func Input_Package(PostmanID string, NoResi string, Name string,
 
 	nm := int64(0)
 
-	sqlStatement := "SELECT count(PackageID) FROM package ORDER BY co ASC "
+	sqlStatement := "SELECT co FROM package ORDER BY co DESC LIMIT 1"
 
 	err := con.QueryRow(sqlStatement).Scan(&nm)
 
@@ -42,7 +42,7 @@ func Input_Package(PostmanID string, NoResi string, Name string,
 
 	nm = int64(0)
 
-	sqlStatement = "SELECT count(IDDetailStatus) FROM detail_status ORDER BY co ASC "
+	sqlStatement = "SELECT co FROM detail_status ORDER BY co DESC LIMIT 1"
 
 	err = con.QueryRow(sqlStatement).Scan(&nm)
 
@@ -356,7 +356,7 @@ func Update_Status_Package(packageID string) (tools.Response, error) {
 
 	nm := int64(0)
 
-	sqlStatement := "SELECT count(IDDetailStatus) FROM detail_status ORDER BY co ASC "
+	sqlStatement := "SELECT co FROM detail_status ORDER BY co DESC LIMIT 1"
 
 	err := con.QueryRow(sqlStatement).Scan(&nm)
 
@@ -438,7 +438,7 @@ func Update_Status_Package_Admin(AdminID string, NoResi string, Name string,
 
 		nm := int64(0)
 
-		sqlStatement = "SELECT count(IDDetailStatus) FROM detail_status ORDER BY co ASC "
+		sqlStatement = "SELECT co FROM detail_status ORDER BY co DESC LIMIT 1"
 
 		err := con.QueryRow(sqlStatement).Scan(&nm)
 
@@ -505,7 +505,7 @@ func Update_Status_Package_Resident(packageID string) (tools.Response, error) {
 
 	nm := int64(0)
 
-	sqlStatement := "SELECT count(IDDetailStatus) FROM detail_status ORDER BY co ASC "
+	sqlStatement := "SELECT co FROM detail_status ORDER BY co DESC LIMIT 1"
 
 	err := con.QueryRow(sqlStatement).Scan(&nm)
 

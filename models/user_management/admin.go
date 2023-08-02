@@ -82,7 +82,7 @@ func Create_Admin_And_Building(Email string, Password string, Name string,
 
 	nm := int64(0)
 
-	sqlStatement := "SELECT count(BuildingID) FROM building ORDER BY co ASC "
+	sqlStatement := "SELECT co FROM building ORDER BY co DESC LIMIT 1"
 
 	err := con.QueryRow(sqlStatement).Scan(&nm)
 
@@ -105,7 +105,7 @@ func Create_Admin_And_Building(Email string, Password string, Name string,
 	//Admin
 	nm = int64(0)
 
-	sqlStatement = "SELECT count(AdminID) FROM admin ORDER BY co ASC "
+	sqlStatement = "SELECT co FROM admin ORDER BY co DESC LIMIT 1"
 
 	err = con.QueryRow(sqlStatement).Scan(&nm)
 
