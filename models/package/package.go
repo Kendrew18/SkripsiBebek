@@ -88,18 +88,18 @@ func Input_Package(PostmanID string, NoResi string, Name string,
 }
 
 //Read-Package (V)
-func Read_Package(ResidentID string, AdminID string, PostmanID string) (tools.Response, error) {
+func Read_Package(ID string, status int) (tools.Response, error) {
 	var res tools.Response
 	var Package st_package.Read_Package
 	var arr_Package []st_package.Read_Package
 
 	con := db.CreateCon()
 
-	if ResidentID != "" {
+	if status == 1 {
 
 		sqlStatement := "SELECT PackageID,NoResi,Street_Name,StatusName FROM package join detail_status ds on package.IDDetail = ds.IDDetailStatus  join status_pack ON ds.IDStatus=status_pack.StatusID WHERE ResidentID=? && ds.IDStatus=? ORDER BY package.co ASC"
 
-		rows, err := con.Query(sqlStatement, ResidentID, "STAT-2")
+		rows, err := con.Query(sqlStatement, ID, "STAT-2")
 
 		defer rows.Close()
 
@@ -115,11 +115,11 @@ func Read_Package(ResidentID string, AdminID string, PostmanID string) (tools.Re
 			}
 			arr_Package = append(arr_Package, Package)
 		}
-	} else if AdminID != "" {
+	} else if status == 2 {
 
 		sqlStatement := "SELECT PackageID,NoResi,Street_Name,StatusName FROM package join detail_status ds on package.IDDetail = ds.IDDetailStatus  join status_pack ON ds.IDStatus=status_pack.StatusID WHERE AdminID=? && ds.IDStatus=? ORDER BY package.co ASC"
 
-		rows, err := con.Query(sqlStatement, AdminID, "STAT-2")
+		rows, err := con.Query(sqlStatement, ID, "STAT-2")
 
 		defer rows.Close()
 
@@ -135,11 +135,11 @@ func Read_Package(ResidentID string, AdminID string, PostmanID string) (tools.Re
 			}
 			arr_Package = append(arr_Package, Package)
 		}
-	} else if PostmanID != "" {
+	} else if status == 3 {
 
 		sqlStatement := "SELECT PackageID,NoResi,Street_Name,StatusName FROM package JOIN detail_status ds ON package.IDDetail = ds.IDDetailStatus JOIN status_pack ON status_pack.StatusID = ds.IDStatus WHERE PostmanID=? && StatusID=? ORDER BY package.co ASC"
 
-		rows, err := con.Query(sqlStatement, PostmanID, "STAT-1")
+		rows, err := con.Query(sqlStatement, ID, "STAT-1")
 
 		defer rows.Close()
 
@@ -171,18 +171,18 @@ func Read_Package(ResidentID string, AdminID string, PostmanID string) (tools.Re
 }
 
 //Read-Package-History
-func Read_Package_History(ResidentID string, AdminID string, PostmanID string) (tools.Response, error) {
+func Read_Package_History(ID string, status int) (tools.Response, error) {
 	var res tools.Response
 	var Package st_package.Read_Package
 	var arr_Package []st_package.Read_Package
 
 	con := db.CreateCon()
 
-	if ResidentID != "" {
+	if status == 1 {
 
 		sqlStatement := "SELECT PackageID,NoResi,Street_Name,StatusName FROM package join detail_status ds on package.IDDetail = ds.IDDetailStatus  join status_pack ON ds.IDStatus=status_pack.StatusID WHERE ResidentID=? && ds.IDStatus=? ORDER BY package.co ASC"
 
-		rows, err := con.Query(sqlStatement, ResidentID, "STAT-3")
+		rows, err := con.Query(sqlStatement, ID, "STAT-3")
 
 		defer rows.Close()
 
@@ -198,11 +198,11 @@ func Read_Package_History(ResidentID string, AdminID string, PostmanID string) (
 			}
 			arr_Package = append(arr_Package, Package)
 		}
-	} else if AdminID != "" {
+	} else if status == 2 {
 
 		sqlStatement := "SELECT PackageID,NoResi,Street_Name,StatusName FROM package join detail_status ds on package.IDDetail = ds.IDDetailStatus  join status_pack ON ds.IDStatus=status_pack.StatusID WHERE AdminID=? && ds.IDStatus!=? ORDER BY package.co ASC"
 
-		rows, err := con.Query(sqlStatement, AdminID, "STAT-2")
+		rows, err := con.Query(sqlStatement, ID, "STAT-2")
 
 		defer rows.Close()
 
@@ -218,11 +218,11 @@ func Read_Package_History(ResidentID string, AdminID string, PostmanID string) (
 			}
 			arr_Package = append(arr_Package, Package)
 		}
-	} else if PostmanID != "" {
+	} else if status == 3 {
 
 		sqlStatement := "SELECT PackageID,NoResi,Street_Name,StatusName FROM package join detail_status ds on package.IDDetail = ds.IDDetailStatus  join status_pack ON ds.IDStatus=status_pack.StatusID WHERE PostmanID=? && ds.IDStatus!=? ORDER BY  package.co ASC"
 
-		rows, err := con.Query(sqlStatement, PostmanID, "STAT-1")
+		rows, err := con.Query(sqlStatement, ID, "STAT-1")
 
 		defer rows.Close()
 
@@ -302,12 +302,12 @@ func Read_Detail_Package(PackageID string) (tools.Response, error) {
 
 	con := db.CreateCon()
 
-	sqlStatement := "SELECT PackageID, NoResi, package.Name, Street_Name, Building_Name,Street_Name,StatusName,p.Name FROM package JOIN postman p on package.PostmanID = p.PostmanID JOIN detail_status ds ON package.IDDetail = ds.IDDetailStatus JOIN status_pack sp on ds.IDStatus = sp.StatusID WHERE package.PackageID=?"
+	sqlStatement := "SELECT PackageID, NoResi, package.Name, Street_Name, Building_Name,Street_Name,StatusName,p.Name,Room_Number FROM package JOIN postman p on package.PostmanID = p.PostmanID JOIN detail_status ds ON package.IDDetail = ds.IDDetailStatus JOIN status_pack sp on ds.IDStatus = sp.StatusID WHERE package.PackageID=?"
 
 	_ = con.QueryRow(sqlStatement, PackageID).Scan(&Package.PackageID,
 		&Package.Noresi, &Package.Name, &Package.Street_Name,
 		&Package.Building_Name, &Package.Street_Name, &Package.Postman_Name,
-		&Package.Current_Status)
+		&Package.Current_Status, Package.Room_Number)
 
 	fmt.Println(Package)
 

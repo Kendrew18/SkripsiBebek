@@ -4,6 +4,7 @@ import (
 	_package "SkripsiBebek/models/package"
 	"github.com/labstack/echo/v4"
 	"net/http"
+	"strconv"
 )
 
 //Input_Package
@@ -27,11 +28,12 @@ func InputPackage(c echo.Context) error {
 
 //Read_Package
 func ReadPackage(c echo.Context) error {
-	ResidentID := c.FormValue("resident_id")
-	AdminID := c.FormValue("admin_id")
-	PostmanID := c.FormValue("postman_id")
+	ID := c.FormValue("id")
+	Status := c.FormValue("status")
 
-	result, err := _package.Read_Package(ResidentID, AdminID, PostmanID)
+	st, _ := strconv.Atoi(Status)
+
+	result, err := _package.Read_Package(ID, st)
 
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
@@ -42,11 +44,12 @@ func ReadPackage(c echo.Context) error {
 
 //Read_Package_History
 func ReadPackageHistory(c echo.Context) error {
-	ResidentID := c.FormValue("resident_id")
-	AdminID := c.FormValue("admin_id")
-	PostmanID := c.FormValue("postman_id")
+	ID := c.FormValue("id")
+	Status := c.FormValue("status")
 
-	result, err := _package.Read_Package_History(ResidentID, AdminID, PostmanID)
+	st, _ := strconv.Atoi(Status)
+
+	result, err := _package.Read_Package_History(ID, st)
 
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
