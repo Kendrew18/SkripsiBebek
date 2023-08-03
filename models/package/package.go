@@ -580,7 +580,7 @@ func Update_Data_Package(packageID string, NoResi string, Name string,
 
 	sqlStatement := "SELECT StatusID FROM package JOIN detail_status ds on package.IDDetail = ds.IDDetailStatus JOIN status_pack sp on ds.IDStatus = sp.StatusID WHERE package.PackageID=? "
 
-	err := con.QueryRow(sqlStatement).Scan(&nm)
+	err := con.QueryRow(sqlStatement, packageID).Scan(&nm)
 
 	if err != nil {
 		return res, err
