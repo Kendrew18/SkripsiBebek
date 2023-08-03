@@ -6,3 +6,7 @@ type Read_Package struct {
 	Street_Name string `json:"street_name"`
 	Status      string `json:"status"`
 }
+
+type Read_Id_Package struct {
+	Id_Package string `json:"id_package"`
+}

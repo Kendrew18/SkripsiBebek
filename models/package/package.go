@@ -414,6 +414,7 @@ func Update_Status_Package(packageID string) (tools.Response, error) {
 func Update_Status_Package_Admin(AdminID string, NoResi string, Name string,
 	Street_Name string, Building_Name string, Room_Number string) (tools.Response, error) {
 	var res tools.Response
+	var rdp st_package.Read_Id_Package
 	con := db.CreateCon()
 
 	Pack_ID := ""
@@ -423,6 +424,8 @@ func Update_Status_Package_Admin(AdminID string, NoResi string, Name string,
 	_ = con.QueryRow(sqlStatement, Room_Number, Building_Name, Street_Name, Name).Scan(&Pack_ID)
 
 	fmt.Println(Pack_ID)
+
+	rdp.Id_Package = Pack_ID
 
 	if Pack_ID != "" {
 		ResID := ""
@@ -498,10 +501,12 @@ func Update_Status_Package_Admin(AdminID string, NoResi string, Name string,
 		} else {
 			res.Status = http.StatusNotFound
 			res.Message = "Not Found"
+			res.Data = rdp
 		}
 	} else {
 		res.Status = http.StatusNotFound
 		res.Message = "Not Found"
+		res.Data = rdp
 	}
 
 	return res, nil

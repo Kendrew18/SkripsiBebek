@@ -99,7 +99,7 @@ func Read_CSV(writer http.ResponseWriter, request *http.Request, BuidingID strin
 
 		sqlStatement := "SELECT ResidentID FROM resident WHERE email=? "
 
-		_ = con.QueryRow(sqlStatement, BuidingID, records[i][3]).Scan(&ID)
+		_ = con.QueryRow(sqlStatement, records[i][3]).Scan(&ID)
 
 		if ID == "" {
 
