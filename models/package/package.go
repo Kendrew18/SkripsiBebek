@@ -416,78 +416,88 @@ func Update_Status_Package_Admin(AdminID string, NoResi string, Name string,
 	var res tools.Response
 	con := db.CreateCon()
 
-	ResID := ""
+	Pack_ID := ""
 
-	sqlStatement := "SELECT ResidentID FROM resident join building b on b.BuildingID = resident.BuildingID WHERE room_no=? && BuildingName=? && Address=? && CONCAT(name,' ',surname) LIKE ?"
+	sqlStatement := "SELECT PackageID FROM package WHERE Room_Number=? && Building_Name=? && Street_Name=? && Name=?"
 
-	TN := "%" + Name + "%"
+	_ = con.QueryRow(sqlStatement, Room_Number, Building_Name, Street_Name, Name).Scan(&Pack_ID)
 
-	fmt.Println(TN)
-	_ = con.QueryRow(sqlStatement, Room_Number, Building_Name, Street_Name, TN).Scan(&ResID)
+	fmt.Println(Pack_ID)
 
-	fmt.Println(ResID)
+	if Pack_ID != "" {
+		ResID := ""
 
-	if ResID != "" {
+		sqlStatement := "SELECT ResidentID FROM resident join building b on b.BuildingID = resident.BuildingID WHERE room_no=? && BuildingName=? && Address=? && CONCAT(name,' ',surname)=?"
 
-		//Create detail status baru
-		packageID := ""
+		_ = con.QueryRow(sqlStatement, Room_Number, Building_Name, Street_Name, Name).Scan(&ResID)
 
-		sqlStatement := "SELECT PackageID FROM package WHERE NoResi=? && Room_Number=? && Building_Name=? && Street_Name=?"
+		fmt.Println(ResID)
 
-		_ = con.QueryRow(sqlStatement, NoResi, Room_Number, Building_Name, Street_Name).Scan(&packageID)
+		if ResID != "" {
 
-		nm := int64(0)
+			//Create detail status baru
+			packageID := ""
 
-		sqlStatement = "SELECT co FROM detail_status ORDER BY co DESC LIMIT 1"
+			sqlStatement := "SELECT PackageID FROM package WHERE NoResi=? && Room_Number=? && Building_Name=? && Street_Name=?"
 
-		err := con.QueryRow(sqlStatement).Scan(&nm)
+			_ = con.QueryRow(sqlStatement, NoResi, Room_Number, Building_Name, Street_Name).Scan(&packageID)
 
-		nm = nm + 1
+			nm := int64(0)
 
-		temp := strconv.FormatInt(nm, 10)
+			sqlStatement = "SELECT co FROM detail_status ORDER BY co DESC LIMIT 1"
 
-		DST := "DS-" + temp
+			err := con.QueryRow(sqlStatement).Scan(&nm)
 
-		var time1 = time.Now()
-		date_sql := time1.Format("2006-01-02")
+			nm = nm + 1
 
-		sqlStatement = "INSERT INTO detail_status(co,iddetailstatus, idpacakage, idstatus, date) values(?,?,?,?,?)"
+			temp := strconv.FormatInt(nm, 10)
 
-		stmt, err := con.Prepare(sqlStatement)
+			DST := "DS-" + temp
 
-		if err != nil {
-			return res, err
-		}
+			var time1 = time.Now()
+			date_sql := time1.Format("2006-01-02")
 
-		_, err = stmt.Exec(nm, DST, packageID, "STAT-2", date_sql)
+			sqlStatement = "INSERT INTO detail_status(co,iddetailstatus, idpacakage, idstatus, date) values(?,?,?,?,?)"
 
-		//Update Status Package
-		sqlStatement = "UPDATE package SET IDDetail=?, AdminID=?, ResidentID=? WHERE PackageID=?"
+			stmt, err := con.Prepare(sqlStatement)
 
-		stmt, err = con.Prepare(sqlStatement)
+			if err != nil {
+				return res, err
+			}
 
-		if err != nil {
-			return res, err
-		}
+			_, err = stmt.Exec(nm, DST, packageID, "STAT-2", date_sql)
 
-		result, err := stmt.Exec(DST, AdminID, ResID, packageID)
+			//Update Status Package
+			sqlStatement = "UPDATE package SET IDDetail=?, AdminID=?, ResidentID=? WHERE PackageID=?"
 
-		if err != nil {
-			return res, err
-		}
+			stmt, err = con.Prepare(sqlStatement)
 
-		rowschanged, err := result.RowsAffected()
+			if err != nil {
+				return res, err
+			}
 
-		if err != nil {
-			return res, err
-		}
+			result, err := stmt.Exec(DST, AdminID, ResID, packageID)
 
-		stmt.Close()
+			if err != nil {
+				return res, err
+			}
 
-		res.Status = http.StatusOK
-		res.Message = "Suksess"
-		res.Data = map[string]int64{
-			"rows": rowschanged,
+			rowschanged, err := result.RowsAffected()
+
+			if err != nil {
+				return res, err
+			}
+
+			stmt.Close()
+
+			res.Status = http.StatusOK
+			res.Message = "Suksess"
+			res.Data = map[string]int64{
+				"rows": rowschanged,
+			}
+		} else {
+			res.Status = http.StatusNotFound
+			res.Message = "Not Found"
 		}
 	} else {
 		res.Status = http.StatusNotFound
