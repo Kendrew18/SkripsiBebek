@@ -306,8 +306,8 @@ func Read_Detail_Package(PackageID string) (tools.Response, error) {
 
 	_ = con.QueryRow(sqlStatement, PackageID).Scan(&Package.PackageID,
 		&Package.Noresi, &Package.Name, &Package.Street_Name,
-		&Package.Building_Name, &Package.Street_Name, &Package.Postman_Name,
-		&Package.Current_Status, &Package.Room_Number)
+		&Package.Building_Name, &Package.Street_Name, &Package.Current_Status,
+		&Package.Postman_Name, &Package.Room_Number)
 
 	fmt.Println(Package)
 
