@@ -36,16 +36,3 @@ func UpdateProfilePostman(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, result)
 }
-
-//See_Profile_Postman
-func SeeProfilePostman(c echo.Context) error {
-	PostmanID := c.FormValue("postman_id")
-
-	result, err := user_management.See_Profile_Postman(PostmanID)
-
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
-	}
-
-	return c.JSON(http.StatusOK, result)
-}

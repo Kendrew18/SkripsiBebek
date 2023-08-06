@@ -264,32 +264,3 @@ func Update_Profile_Resident(id_resident string, name string,
 
 	return res, nil
 }
-
-//See_Profile_Resident
-func See_Profile_Resident(id_resident string) (tools.Response, error) {
-	var res tools.Response
-	var resi user_management.Resident_Profile
-
-	con := db.CreateCon()
-
-	sqlStatement := "SELECT ResidentID, name, surname,email,password FROM resident WHERE ResidentID=?"
-
-	err := con.QueryRow(sqlStatement, id_resident).Scan(&resi.Resident_id,
-		&resi.Name, &resi.Surname, &resi.Email, &resi.Password)
-
-	if err != nil {
-		return res, err
-	}
-
-	if resi.Resident_id == "" {
-		res.Status = http.StatusNotFound
-		res.Message = "Not Found"
-		res.Data = resi
-	} else {
-		res.Status = http.StatusOK
-		res.Message = "Sukses"
-		res.Data = resi
-	}
-
-	return res, nil
-}

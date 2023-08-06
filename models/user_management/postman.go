@@ -103,32 +103,3 @@ func Update_Profile_Postman(postman_id string, name string, email string, passwo
 
 	return res, nil
 }
-
-//See_Profile_Postman
-func See_Profile_Postman(Postman_id string) (tools.Response, error) {
-	var res tools.Response
-	var pos user_management.Postman_Profile
-
-	con := db.CreateCon()
-
-	sqlStatement := "SELECT PostmanID,Name,Email,Password FROM postman WHERE PostmanID=?"
-
-	err := con.QueryRow(sqlStatement, Postman_id).Scan(&pos.Postman_id,
-		&pos.Name, &pos.Email, &pos.Password)
-
-	if err != nil {
-		return res, err
-	}
-
-	if pos.Postman_id == "" {
-		res.Status = http.StatusNotFound
-		res.Message = "Not Found"
-		res.Data = pos
-	} else {
-		res.Status = http.StatusOK
-		res.Message = "Sukses"
-		res.Data = pos
-	}
-
-	return res, nil
-}

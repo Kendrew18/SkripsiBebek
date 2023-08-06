@@ -207,31 +207,79 @@ func Update_Profile_Admin_Building(Admin_id string, Building_Id string, Email st
 	return res, nil
 }
 
-//See_Profile_Admin
-func See_Profile_Admin(Admin_id string) (tools.Response, error) {
+//See_Profile
+func See_Profile(id string, status int) (tools.Response, error) {
 	var res tools.Response
-	var Admin user_management.Admin_Profile
-
 	con := db.CreateCon()
+	if status == 1 {
+		//res
+		var resi user_management.Resident_Profile
 
-	sqlStatement := "SELECT AdminID,b.BuildingID, admin.Name,admin.Email,admin.Password,b.BuildingName,b.Address,b.Biography FROM admin Join building join building b on admin.BuildingID = b.BuildingID WHERE AdminID=?"
+		sqlStatement := "SELECT ResidentID, name, surname,email,password FROM resident WHERE ResidentID=?"
 
-	err := con.QueryRow(sqlStatement, Admin_id).Scan(&Admin.Admin_id, &Admin.Building_id,
-		&Admin.Name, &Admin.Email, &Admin.Password, &Admin.Building_Name,
-		&Admin.Address, &Admin.Biography)
+		err := con.QueryRow(sqlStatement, id).Scan(&resi.Resident_id,
+			&resi.Name, &resi.Surname, &resi.Email, &resi.Password)
 
-	if err != nil {
-		return res, err
-	}
+		if err != nil {
+			return res, err
+		}
 
-	if Admin.Admin_id == "" {
-		res.Status = http.StatusNotFound
-		res.Message = "Not Found"
-		res.Data = Admin
-	} else {
-		res.Status = http.StatusOK
-		res.Message = "Sukses"
-		res.Data = Admin
+		if resi.Resident_id == "" {
+			res.Status = http.StatusNotFound
+			res.Message = "Not Found"
+			res.Data = resi
+		} else {
+			res.Status = http.StatusOK
+			res.Message = "Sukses"
+			res.Data = resi
+		}
+
+	} else if status == 2 {
+		//admin
+		var Admin user_management.Admin_Profile
+
+		sqlStatement := "SELECT AdminID,b.BuildingID, admin.Name,admin.Email,admin.Password,b.BuildingName,b.Address,b.Biography FROM admin Join building join building b on admin.BuildingID = b.BuildingID WHERE AdminID=?"
+
+		err := con.QueryRow(sqlStatement, id).Scan(&Admin.Admin_id, &Admin.Building_id,
+			&Admin.Name, &Admin.Email, &Admin.Password, &Admin.Building_Name,
+			&Admin.Address, &Admin.Biography)
+
+		if err != nil {
+			return res, err
+		}
+
+		if Admin.Admin_id == "" {
+			res.Status = http.StatusNotFound
+			res.Message = "Not Found"
+			res.Data = Admin
+		} else {
+			res.Status = http.StatusOK
+			res.Message = "Sukses"
+			res.Data = Admin
+		}
+
+	} else if status == 3 {
+		//postman
+		var pos user_management.Postman_Profile
+
+		sqlStatement := "SELECT PostmanID,Name,Email,Password FROM postman WHERE PostmanID=?"
+
+		err := con.QueryRow(sqlStatement, id).Scan(&pos.Postman_id,
+			&pos.Name, &pos.Email, &pos.Password)
+
+		if err != nil {
+			return res, err
+		}
+
+		if pos.Postman_id == "" {
+			res.Status = http.StatusNotFound
+			res.Message = "Not Found"
+			res.Data = pos
+		} else {
+			res.Status = http.StatusOK
+			res.Message = "Sukses"
+			res.Data = pos
+		}
 	}
 
 	return res, nil

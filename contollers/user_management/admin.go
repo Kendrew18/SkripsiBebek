@@ -65,11 +65,14 @@ func UpdateProfileAdminBuilding(c echo.Context) error {
 	return c.JSON(http.StatusOK, result)
 }
 
-//See_Profile_Admin
-func SeeProfileAdmin(c echo.Context) error {
-	AdminID := c.FormValue("admin_id")
+//See_Profile
+func SeeProfile(c echo.Context) error {
+	ID := c.FormValue("id")
+	Status := c.FormValue("status")
 
-	result, err := user_management.See_Profile_Admin(AdminID)
+	st, _ := strconv.Atoi(Status)
+
+	result, err := user_management.See_Profile(ID, st)
 
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
