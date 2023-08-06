@@ -137,3 +137,102 @@ func Create_Admin_And_Building(Email string, Password string, Name string,
 
 	return res, nil
 }
+
+//Update_Profile_Admin_Building
+func Update_Profile_Admin_Building(Admin_id string, Building_Id string, Email string, Password string, Name string,
+	BuildingName string, Address string, Biography string) (tools.Response, error) {
+	var res tools.Response
+
+	con := db.CreateCon()
+
+	nm := ""
+
+	sqlStatement := "SELECT AdminID FROM admin WHERE admin.Email=? && admin.AdminID!=?"
+
+	err := con.QueryRow(sqlStatement, Email, Admin_id).Scan(&nm)
+
+	if err != nil {
+		return res, err
+	}
+
+	if nm == "" {
+
+		sqlStatement = "UPDATE admin SET Name=?,Email=?,Password=? WHERE AdminID=?"
+
+		stmt, err := con.Prepare(sqlStatement)
+
+		if err != nil {
+			return res, err
+		}
+
+		result, err := stmt.Exec(Name, Email, Password, Admin_id)
+
+		if err != nil {
+			return res, err
+		}
+
+		rowschanged, err := result.RowsAffected()
+
+		if err != nil {
+			return res, err
+		}
+
+		//Building
+		sqlStatement = "UPDATE building SET BuildingName=?,Address=?,Biography=? WHERE BuildingID=?"
+
+		stmt, err = con.Prepare(sqlStatement)
+
+		if err != nil {
+			return res, err
+		}
+
+		result, err = stmt.Exec(BuildingName, Address, Biography, Building_Id)
+
+		if err != nil {
+			return res, err
+		}
+
+		stmt.Close()
+
+		res.Status = http.StatusOK
+		res.Message = "Suksess"
+		res.Data = map[string]int64{
+			"rows": rowschanged,
+		}
+	} else {
+		res.Status = http.StatusNotFound
+		res.Message = "e-mail already exists"
+	}
+
+	return res, nil
+}
+
+//See_Profile_Admin
+func See_Profile_Admin(Admin_id string) (tools.Response, error) {
+	var res tools.Response
+	var Admin user_management.Admin_Profile
+
+	con := db.CreateCon()
+
+	sqlStatement := "SELECT AdminID,b.BuildingID, admin.Name,admin.Email,admin.Password,b.BuildingName,b.Address,b.Biography FROM admin Join building join building b on admin.BuildingID = b.BuildingID WHERE AdminID=?"
+
+	err := con.QueryRow(sqlStatement, Admin_id).Scan(&Admin.Admin_id, &Admin.Building_id,
+		&Admin.Name, &Admin.Email, &Admin.Password, &Admin.Building_Name,
+		&Admin.Address, &Admin.Biography)
+
+	if err != nil {
+		return res, err
+	}
+
+	if Admin.Admin_id == "" {
+		res.Status = http.StatusNotFound
+		res.Message = "Not Found"
+		res.Data = Admin
+	} else {
+		res.Status = http.StatusOK
+		res.Message = "Sukses"
+		res.Data = Admin
+	}
+
+	return res, nil
+}

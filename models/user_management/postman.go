@@ -8,6 +8,7 @@ import (
 	"strconv"
 )
 
+//Sign_Up_Postman
 func Create_Postman(Name string, Email string, Password string) (tools.Response, error) {
 
 	var res tools.Response
@@ -46,6 +47,88 @@ func Create_Postman(Name string, Email string, Password string) (tools.Response,
 	res.Status = http.StatusOK
 	res.Message = "Sukses"
 	res.Data = data
+
+	return res, nil
+}
+
+//Update_Profile_Postman
+func Update_Profile_Postman(postman_id string, name string, email string, password string) (tools.Response, error) {
+	var res tools.Response
+
+	con := db.CreateCon()
+
+	nm := ""
+
+	sqlStatement := "SELECT PostmanID FROM postman WHERE postman.email=? && postman.PostmanID!=?"
+
+	err := con.QueryRow(sqlStatement, email, postman_id).Scan(&nm)
+
+	if err != nil {
+		return res, err
+	}
+
+	if nm == "" {
+
+		sqlStatement = "UPDATE postman SET name=?,email=?,password=? WHERE PostmanID=?"
+
+		stmt, err := con.Prepare(sqlStatement)
+
+		if err != nil {
+			return res, err
+		}
+
+		result, err := stmt.Exec(name, email, password, postman_id)
+
+		if err != nil {
+			return res, err
+		}
+
+		rowschanged, err := result.RowsAffected()
+
+		if err != nil {
+			return res, err
+		}
+
+		stmt.Close()
+
+		res.Status = http.StatusOK
+		res.Message = "Suksess"
+		res.Data = map[string]int64{
+			"rows": rowschanged,
+		}
+	} else {
+		res.Status = http.StatusNotFound
+		res.Message = "e-mail already exists"
+	}
+
+	return res, nil
+}
+
+//See_Profile_Postman
+func See_Profile_Postman(Postman_id string) (tools.Response, error) {
+	var res tools.Response
+	var pos user_management.Postman_Profile
+
+	con := db.CreateCon()
+
+	sqlStatement := "SELECT PostmanID,Name,Email,Password FROM postman WHERE PostmanID=?"
+
+	err := con.QueryRow(sqlStatement, Postman_id).Scan(&pos.Postman_id,
+		&pos.Name, &pos.Email, &pos.Password)
+
+	if err != nil {
+		return res, err
+	}
+
+	if pos.Postman_id == "" {
+		res.Status = http.StatusNotFound
+		res.Message = "Not Found"
+		res.Data = pos
+	} else {
+		res.Status = http.StatusOK
+		res.Message = "Sukses"
+		res.Data = pos
+	}
 
 	return res, nil
 }

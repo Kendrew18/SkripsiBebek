@@ -210,3 +210,86 @@ func Delete_Resident(ResidentID string) (tools.Response, error) {
 
 	return res, nil
 }
+
+//Update_Data_Resident
+func Update_Profile_Resident(id_resident string, name string,
+	surname string, email string, password string) (tools.Response, error) {
+	var res tools.Response
+
+	con := db.CreateCon()
+
+	nm := ""
+
+	sqlStatement := "SELECT ResidentID FROM resident WHERE resident.email=? && resident.ResidentID!=?"
+
+	err := con.QueryRow(sqlStatement, email, id_resident).Scan(&nm)
+
+	if err != nil {
+		return res, err
+	}
+
+	if nm == "" {
+
+		sqlStatement = "UPDATE resident SET name=?,surname=?,email=?,password=? WHERE ResidentID=?"
+
+		stmt, err := con.Prepare(sqlStatement)
+
+		if err != nil {
+			return res, err
+		}
+
+		result, err := stmt.Exec(name, surname, email, password, id_resident)
+
+		if err != nil {
+			return res, err
+		}
+
+		rowschanged, err := result.RowsAffected()
+
+		if err != nil {
+			return res, err
+		}
+
+		stmt.Close()
+
+		res.Status = http.StatusOK
+		res.Message = "Suksess"
+		res.Data = map[string]int64{
+			"rows": rowschanged,
+		}
+	} else {
+		res.Status = http.StatusNotFound
+		res.Message = "e-mail already exists"
+	}
+
+	return res, nil
+}
+
+//See_Profile_Resident
+func See_Profile_Resident(id_resident string) (tools.Response, error) {
+	var res tools.Response
+	var resi user_management.Resident_Profile
+
+	con := db.CreateCon()
+
+	sqlStatement := "SELECT ResidentID, name, surname,email,password FROM resident WHERE ResidentID=?"
+
+	err := con.QueryRow(sqlStatement, id_resident).Scan(&resi.Resident_id,
+		&resi.Name, &resi.Surname, &resi.Email, &resi.Password)
+
+	if err != nil {
+		return res, err
+	}
+
+	if resi.Resident_id == "" {
+		res.Status = http.StatusNotFound
+		res.Message = "Not Found"
+		res.Data = resi
+	} else {
+		res.Status = http.StatusOK
+		res.Message = "Sukses"
+		res.Data = resi
+	}
+
+	return res, nil
+}

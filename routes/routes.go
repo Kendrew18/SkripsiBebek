@@ -27,10 +27,18 @@ func Init() *echo.Echo {
 	//Postman
 	//Sign-Up-Postman
 	UM.POST("/sign-up-postman", user_management.CreatePostman)
+	//See_Profile_Resident
+	UM.GET("/see-profile-pos", user_management.SeeProfilePostman)
+	//Update-Profile-Resident
+	UM.PUT("/update-profile-pos", user_management.UpdateProfilePostman)
 
 	//Admin
 	//Sign-Up-Admin-Bd
 	UM.POST("/sign-up-admin-bd", user_management.CreateAdminAndBuilding)
+	//See_Profile_Resident
+	UM.GET("/see-profile-adm", user_management.SeeProfileAdmin)
+	//Update-Profile-Resident
+	UM.PUT("/update-profile-adm", user_management.UpdateProfileAdminBuilding)
 
 	//Resident
 	//Read-CSV
@@ -39,6 +47,10 @@ func Init() *echo.Echo {
 	UM.GET("/see-all-resident", user_management.SeeAllResident)
 	//Delete-Resident
 	UM.DELETE("/delete-resident", user_management.DeleteResident)
+	//See_Profile_Resident
+	UM.GET("/see-profile-res", user_management.SeeProfileResident)
+	//Update-Profile-Resident
+	UM.PUT("/update-profile-res", user_management.UpdateProfileResident)
 
 	//Package
 	//Input-Package

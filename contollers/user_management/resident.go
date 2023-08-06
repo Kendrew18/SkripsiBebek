@@ -44,3 +44,33 @@ func DeleteResident(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, result)
 }
+
+//Update_Profile_Resident
+func UpdateProfileResident(c echo.Context) error {
+	ResidentID := c.FormValue("residentid")
+	name := c.FormValue("name")
+	surname := c.FormValue("surname")
+	email := c.FormValue("email")
+	password := c.FormValue("password")
+
+	result, err := user_management.Update_Profile_Resident(ResidentID, name,
+		surname, email, password)
+
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
+	}
+
+	return c.JSON(http.StatusOK, result)
+}
+
+func SeeProfileResident(c echo.Context) error {
+	ResidentID := c.FormValue("residentid")
+
+	result, err := user_management.See_Profile_Resident(ResidentID)
+
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
+	}
+
+	return c.JSON(http.StatusOK, result)
+}
