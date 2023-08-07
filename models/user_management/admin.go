@@ -149,11 +149,7 @@ func Update_Profile_Admin_Building(Admin_id string, Building_Id string, Email st
 
 	sqlStatement := "SELECT AdminID FROM admin WHERE admin.Email=? && admin.AdminID!=?"
 
-	err := con.QueryRow(sqlStatement, Email, Admin_id).Scan(&nm)
-
-	if err != nil {
-		return res, err
-	}
+	_ = con.QueryRow(sqlStatement, Email, Admin_id).Scan(&nm)
 
 	if nm == "" {
 

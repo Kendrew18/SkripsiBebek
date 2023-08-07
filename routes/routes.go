@@ -29,8 +29,7 @@ func Init() *echo.Echo {
 	//Postman
 	//Sign-Up-Postman
 	UM.POST("/sign-up-postman", user_management.CreatePostman)
-
-	//Update-Profile-Resident
+	//Update-Profile-Pos
 	UM.PUT("/update-profile-pos", user_management.UpdateProfilePostman)
 
 	//Admin

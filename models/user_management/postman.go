@@ -61,11 +61,7 @@ func Update_Profile_Postman(postman_id string, name string, email string, passwo
 
 	sqlStatement := "SELECT PostmanID FROM postman WHERE postman.email=? && postman.PostmanID!=?"
 
-	err := con.QueryRow(sqlStatement, email, postman_id).Scan(&nm)
-
-	if err != nil {
-		return res, err
-	}
+	_ = con.QueryRow(sqlStatement, email, postman_id).Scan(&nm)
 
 	if nm == "" {
 

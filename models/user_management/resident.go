@@ -222,11 +222,7 @@ func Update_Profile_Resident(id_resident string, name string,
 
 	sqlStatement := "SELECT ResidentID FROM resident WHERE resident.email=? && resident.ResidentID!=?"
 
-	err := con.QueryRow(sqlStatement, email, id_resident).Scan(&nm)
-
-	if err != nil {
-		return res, err
-	}
+	_ = con.QueryRow(sqlStatement, email, id_resident).Scan(&nm)
 
 	if nm == "" {
 
