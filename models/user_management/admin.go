@@ -6,6 +6,7 @@ import (
 	"SkripsiBebek/tools"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 //Login
@@ -73,74 +74,91 @@ func Login(Email string, Password string, Status int) (tools.Response, error) {
 }
 
 //Create Admin
-func Create_Admin_And_Building(Email string, Password string, Name string,
-	BuildingName string, Address string, Biography string) (tools.Response, error) {
+func Create_Admin_And_Building(Email string, Password string, Name string, BuildingName string, Address string, Biography string) (tools.Response, error) {
 	var res tools.Response
 	var data user_management.Login
 
 	con := db.CreateCon()
 
-	nm := int64(0)
+	con2 := strings.ToLower(BuildingName)
 
-	sqlStatement := "SELECT co FROM building ORDER BY co DESC LIMIT 1"
+	id_building := ""
 
-	err := con.QueryRow(sqlStatement).Scan(&nm)
+	sqlstatement := "SELECT BuildingID FROM building WHERE LOWER(BuildingName)=?"
 
-	nm = nm + 1
-
-	temp := strconv.FormatInt(nm, 10)
-
-	BuildingID := "B-" + temp
-
-	sqlStatement = "INSERT INTO building(co,BuildingID, BuildingName, Address, Biography) values(?,?,?,?,?)"
-
-	stmt, err := con.Prepare(sqlStatement)
+	err := con.QueryRow(sqlstatement, con2).Scan(&id_building)
 
 	if err != nil {
 		return res, err
 	}
 
-	_, err = stmt.Exec(nm, BuildingID, BuildingName, Address, Biography)
+	if id_building == "" {
 
-	//Admin
-	nm = int64(0)
+		nm := int64(0)
 
-	sqlStatement = "SELECT co FROM admin ORDER BY co DESC LIMIT 1"
+		sqlStatement := "SELECT co FROM building ORDER BY co DESC LIMIT 1"
 
-	err = con.QueryRow(sqlStatement).Scan(&nm)
+		err = con.QueryRow(sqlStatement).Scan(&nm)
 
-	nm = nm + 1
+		nm = nm + 1
 
-	temp = strconv.FormatInt(nm, 10)
+		temp := strconv.FormatInt(nm, 10)
 
-	AdminID := "AD-" + temp
+		BuildingID := "B-" + temp
 
-	sqlStatement = "INSERT INTO admin(co,AdminID, Email, Password, Name, BuildingID) values(?,?,?,?,?,?)"
+		sqlStatement = "INSERT INTO building(co,BuildingID, BuildingName, Address, Biography) values(?,?,?,?,?)"
 
-	stmt, err = con.Prepare(sqlStatement)
+		stmt, err := con.Prepare(sqlStatement)
 
-	if err != nil {
-		return res, err
+		if err != nil {
+			return res, err
+		}
+
+		_, err = stmt.Exec(nm, BuildingID, BuildingName, Address, Biography)
+
+		//Admin
+		nm = int64(0)
+
+		sqlStatement = "SELECT co FROM admin ORDER BY co DESC LIMIT 1"
+
+		err = con.QueryRow(sqlStatement).Scan(&nm)
+
+		nm = nm + 1
+
+		temp = strconv.FormatInt(nm, 10)
+
+		AdminID := "AD-" + temp
+
+		sqlStatement = "INSERT INTO admin(co,AdminID, Email, Password, Name, BuildingID) values(?,?,?,?,?,?)"
+
+		stmt, err = con.Prepare(sqlStatement)
+
+		if err != nil {
+			return res, err
+		}
+
+		_, err = stmt.Exec(nm, AdminID, Email, Password, Name, BuildingID)
+
+		stmt.Close()
+
+		data.ID = AdminID
+		data.Status = 2
+		data.BuildingID = BuildingID
+
+		res.Status = http.StatusOK
+		res.Message = "Sukses"
+		res.Data = data
+	} else {
+		res.Status = http.StatusNotFound
+		res.Message = "Nama Building Telah Ada"
+		res.Data = data
 	}
-
-	_, err = stmt.Exec(nm, AdminID, Email, Password, Name, BuildingID)
-
-	stmt.Close()
-
-	data.ID = AdminID
-	data.Status = 2
-	data.BuildingID = BuildingID
-
-	res.Status = http.StatusOK
-	res.Message = "Sukses"
-	res.Data = data
 
 	return res, nil
 }
 
 //Update_Profile_Admin_Building
-func Update_Profile_Admin_Building(Admin_id string, Building_Id string, Email string, Password string, Name string,
-	BuildingName string, Address string, Biography string) (tools.Response, error) {
+func Update_Profile_Admin_Building(Admin_id string, Building_Id string, Email string, Password string, Name string, BuildingName string, Address string, Biography string) (tools.Response, error) {
 	var res tools.Response
 
 	con := db.CreateCon()
