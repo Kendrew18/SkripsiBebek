@@ -3,6 +3,7 @@ package st_package
 type Detail_Resident struct {
 	Date        string `json:"date"`
 	Status_Name string `json:"status_name"`
+	Retrived_by string `json:"retrived_by"`
 }
 
 type Detail_Postman struct {

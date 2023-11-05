@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-//Input-Package (V)
+// Input-Package (V)
 func Input_Package(PostmanID string, NoResi string, Name string,
 	Street_Name string, Building_Name string, Room_Number string) (tools.Response, error) {
 	var res tools.Response
@@ -87,7 +87,7 @@ func Input_Package(PostmanID string, NoResi string, Name string,
 	return res, nil
 }
 
-//Read-Package (V)
+// Read-Package (V)
 func Read_Package(ID string, status int) (tools.Response, error) {
 	var res tools.Response
 	var Package st_package.Read_Package
@@ -170,7 +170,7 @@ func Read_Package(ID string, status int) (tools.Response, error) {
 	return res, nil
 }
 
-//Read-Package-History
+// Read-Package-History
 func Read_Package_History(ID string, status int) (tools.Response, error) {
 	var res tools.Response
 	var Package st_package.Read_Package
@@ -253,7 +253,7 @@ func Read_Package_History(ID string, status int) (tools.Response, error) {
 	return res, nil
 }
 
-//Read-Detail-Package (Resident) (tidak jadi digunakan)
+// Read-Detail-Package (Resident) (tidak jadi digunakan)
 func Read_Detail_Package_Resident(PackageID string) (tools.Response, error) {
 	var res tools.Response
 	var Package st_package.Detail_Resident
@@ -292,7 +292,7 @@ func Read_Detail_Package_Resident(PackageID string) (tools.Response, error) {
 	return res, nil
 }
 
-//Read-Detail-Package (V)
+// Read-Detail-Package (V)
 func Read_Detail_Package(PackageID string) (tools.Response, error) {
 	var res tools.Response
 	var Package st_package.Detail_Postman
@@ -311,7 +311,7 @@ func Read_Detail_Package(PackageID string) (tools.Response, error) {
 
 	fmt.Println(Package)
 
-	sqlStatement = "SELECT date,StatusName FROM detail_status join status_pack s ON s.StatusID=detail_status.IDStatus where IDPacakage=?"
+	sqlStatement = "SELECT date, StatusName FROM detail_status join status_pack s ON s.StatusID=detail_status.IDStatus where IDPacakage=?"
 
 	rows, err := con.Query(sqlStatement, PackageID)
 
@@ -326,6 +326,18 @@ func Read_Detail_Package(PackageID string) (tools.Response, error) {
 		if err != nil {
 			return res, err
 		}
+
+		if St_Package.Status_Name == "On Delivery" {
+			sqlst := "SELECT FROM package JOIN postman onWHERE "
+
+			err := con.QueryRow().Scan()
+
+		} else if St_Package.Status_Name == "On Admin" {
+
+		} else if St_Package.Status_Name == "Success" {
+
+		}
+
 		ST_arr_Package = append(ST_arr_Package, St_Package)
 	}
 
@@ -348,7 +360,7 @@ func Read_Detail_Package(PackageID string) (tools.Response, error) {
 	return res, nil
 }
 
-//Update-Status-Package (Return Postman)
+// Update-Status-Package (Return Postman)
 func Update_Status_Package(packageID string) (tools.Response, error) {
 	var res tools.Response
 
@@ -410,7 +422,7 @@ func Update_Status_Package(packageID string) (tools.Response, error) {
 	return res, nil
 }
 
-//Update-Status-Package (Admin) (V)
+// Update-Status-Package (Admin) (V)
 func Update_Status_Package_Admin(AdminID string, NoResi string, Name string,
 	Street_Name string, Building_Name string, Room_Number string) (tools.Response, error) {
 	var res tools.Response
@@ -512,7 +524,7 @@ func Update_Status_Package_Admin(AdminID string, NoResi string, Name string,
 	return res, nil
 }
 
-//Update-Status-Package (Resident) (V)
+// Update-Status-Package (Resident) (V)
 func Update_Status_Package_Resident(packageID string) (tools.Response, error) {
 	var res tools.Response
 
@@ -574,7 +586,7 @@ func Update_Status_Package_Resident(packageID string) (tools.Response, error) {
 	return res, nil
 }
 
-//Update-Data-Package
+// Update-Data-Package
 func Update_Data_Package(packageID string, NoResi string, Name string,
 	Street_Name string, Building_Name string, Room_Number string) (tools.Response, error) {
 	var res tools.Response
@@ -626,4 +638,50 @@ func Update_Data_Package(packageID string, NoResi string, Name string,
 	}
 
 	return res, nil
+}
+
+// Notif-User
+func Notif_User(id_user string) (tools.Response, error) {
+
+	var res tools.Response
+	var arr_Package []st_package.Read_Package_Notif
+
+	con := db.CreateCon()
+
+	sqlStatement := "SELECT PackageID,NoResi,Street_Name,StatusName FROM package join detail_status ds on package.IDDetail = ds.IDDetailStatus  join status_pack ON ds.IDStatus=status_pack.StatusID WHERE ResidentID=? && ds.IDStatus=? ORDER BY package.co ASC"
+
+	rows, err := con.Query(sqlStatement, id_user, "STAT-2")
+
+	defer rows.Close()
+
+	if err != nil {
+		return res, err
+	}
+
+	for rows.Next() {
+		var Package st_package.Read_Package_Notif
+		err = rows.Scan(&Package.Id_Package, &Package.No_Resi,
+			&Package.Street_Name, &Package.Status)
+
+		if err != nil {
+			return res, err
+		}
+
+		Package.Message = "The package with the registration number is already in the admin"
+
+		arr_Package = append(arr_Package, Package)
+	}
+
+	if arr_Package == nil {
+		res.Status = http.StatusNotFound
+		res.Message = "Not Found"
+		res.Data = arr_Package
+	} else {
+		res.Status = http.StatusOK
+		res.Message = "Sukses"
+		res.Data = arr_Package
+	}
+
+	return res, nil
+
 }

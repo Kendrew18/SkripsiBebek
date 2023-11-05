@@ -3,9 +3,10 @@ package routes
 import (
 	_package "SkripsiBebek/contollers/package"
 	"SkripsiBebek/contollers/user_management"
+	"net/http"
+
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"net/http"
 )
 
 func Init() *echo.Echo {
@@ -14,7 +15,7 @@ func Init() *echo.Echo {
 	e.Use(middleware.CORSWithConfig(middleware.DefaultCORSConfig))
 
 	e.GET("/", func(c echo.Context) error {
-		return c.String(http.StatusOK, "Project-NDL")
+		return c.String(http.StatusOK, "Skripsi-Bebek")
 	})
 
 	UM := e.Group("/UM")
@@ -68,6 +69,8 @@ func Init() *echo.Echo {
 	PCK.POST("/update-stat-res", _package.UpdateStatusPackageResident)
 	//Update-Data-Package
 	PCK.PUT("/update-data-package", _package.UpdateDataPackage)
+
+	PCK.GET("/notif", _package.NotifUser)
 
 	return e
 }
