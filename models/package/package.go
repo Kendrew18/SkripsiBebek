@@ -326,18 +326,18 @@ func Read_Detail_Package(PackageID string) (tools.Response, error) {
 		if err != nil {
 			return res, err
 		}
+		/*
+			if St_Package.Status_Name == "On Delivery" {
+				sqlst := "SELECT FROM package JOIN postman onWHERE "
 
-		if St_Package.Status_Name == "On Delivery" {
-			sqlst := "SELECT FROM package JOIN postman onWHERE "
+				err := con.QueryRow().Scan()
 
-			err := con.QueryRow().Scan()
+			} else if St_Package.Status_Name == "On Admin" {
 
-		} else if St_Package.Status_Name == "On Admin" {
+			} else if St_Package.Status_Name == "Success" {
 
-		} else if St_Package.Status_Name == "Success" {
-
-		}
-
+			}
+		*/
 		ST_arr_Package = append(ST_arr_Package, St_Package)
 	}
 
