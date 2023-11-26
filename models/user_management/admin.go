@@ -86,11 +86,7 @@ func Create_Admin_And_Building(Email string, Password string, Name string, Build
 
 	sqlstatement := "SELECT BuildingID FROM building WHERE LOWER(BuildingName)=?"
 
-	err := con.QueryRow(sqlstatement, con2).Scan(&id_building)
-
-	if err != nil {
-		return res, err
-	}
+	_ = con.QueryRow(sqlstatement, con2).Scan(&id_building)
 
 	if id_building == "" {
 
@@ -98,7 +94,7 @@ func Create_Admin_And_Building(Email string, Password string, Name string, Build
 
 		sqlStatement := "SELECT co FROM building ORDER BY co DESC LIMIT 1"
 
-		err = con.QueryRow(sqlStatement).Scan(&nm)
+		err := con.QueryRow(sqlStatement).Scan(&nm)
 
 		nm = nm + 1
 

@@ -431,9 +431,11 @@ func Update_Status_Package_Admin(AdminID string, NoResi string, Name string,
 
 	Pack_ID := ""
 
-	sqlStatement := "SELECT PackageID FROM package WHERE Room_Number=? && Building_Name=? && Street_Name=? && Name=?"
+	sqlStatement := "SELECT PackageID FROM package WHERE NoResi=? && Room_Number=? && Building_Name=? && Street_Name=? && Name=?"
 
-	_ = con.QueryRow(sqlStatement, Room_Number, Building_Name, Street_Name, Name).Scan(&Pack_ID)
+	fmt.Println(NoResi)
+
+	_ = con.QueryRow(sqlStatement, NoResi, Room_Number, Building_Name, Street_Name, Name).Scan(&Pack_ID)
 
 	fmt.Println(Pack_ID)
 
